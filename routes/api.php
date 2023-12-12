@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartsController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductsController;
+use App\Models\Order;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,4 +53,11 @@ Route::group([
     Route::get('/', [CartsController::class, 'getCart']);
     Route::put('/update/{id}', [CartsController::class, 'updateCart']);
     Route::delete('/remove/{id}', [CartsController::class, 'deleteCart']);
+});
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'order'
+], function ($router) {
+    Route::post('/', [OrderController::class, 'generateSnapToken']);
 });
