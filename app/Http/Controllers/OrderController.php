@@ -33,11 +33,11 @@ class OrderController extends Controller
             ),
         );
 
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
         return response()->json([
-            'success' => true,
-            'message' => 'Midtrans Token',
-            'params' => $params,
-            'data' => \Midtrans\Snap::getSnapToken($params)
-        ], 200);
+            'token' => $snapToken,
+            'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/' . $snapToken,
+        ]);
     }
 }
