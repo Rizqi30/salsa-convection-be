@@ -18,7 +18,10 @@ class CartsController extends Controller
             return [
                 'cart_id' => $cartItem->id,
                 'product_id' => $productId,
+                'size' => $cartItem->size,
+                'color' => $cartItem->color,
                 'quantity' => $cartItem->quantity,
+                'price' => $cartItem->price,
                 'product_data' => $productData,
             ];
         });
@@ -35,7 +38,10 @@ class CartsController extends Controller
         $cart = new CartModel();
         $cart->user_id = $request->user_id;
         $cart->product_id = $request->product_id;
+        $cart->size = $request->size;
+        $cart->color = $request->color;
         $cart->quantity = $request->quantity;
+        $cart->price = $request->price;
         $cart->save();
 
         return response()->json([
