@@ -60,4 +60,8 @@ Route::group([
     'prefix' => 'order'
 ], function ($router) {
     Route::post('/', [OrderController::class, 'generateSnapToken']);
+    Route::get('/', [OrderController::class, 'index']);
+    Route::get('/snap', [OrderController::class, 'showBySnapToken']);
+    Route::get('/snap/{id}', [OrderController::class, 'showBySnapTokenId']);
+    Route::post('/store', [OrderController::class, 'store']);
 });

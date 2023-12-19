@@ -14,12 +14,17 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
+            $table->string('size');
+            $table->string('color');
             $table->string('quantity');
-            $table->bigInteger('total');
+            $table->string('price');
+            $table->string('snap_token')->nullable();
             $table->enum('status', ['Unpaid', 'Paid']);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('product_id')->references('id')->on('products');
         });
     }
 
