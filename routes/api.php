@@ -31,6 +31,7 @@ Route::group([
     Route::post('/', [ProductsController::class, 'store']);
     Route::get('/{id}', [ProductsController::class, 'show']);
     Route::put('/{id}', [ProductsController::class, 'update']);
+    Route::post('/image', [ProductsController::class, 'updateImage']);
     Route::delete('/{id}', [ProductsController::class, 'destroy']);
 });
 

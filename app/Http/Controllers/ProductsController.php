@@ -80,44 +80,72 @@ class ProductsController extends Controller
                 'message' => 'Produk tidak ditemukan',
             ], 404);
         }
+       
+        $updated = $product->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'size' => $request->size,
+            'color' => $request->color,
+            'quantity' => $request->quantity,
+            'description' => $request->description,
+            'status' => $request->status,
+            'sold' => $request->sold,
+        ]);
 
-        if ($request->img != null) {
-            $updated = $product->update([
-                "img" => $request->img,
-                'name' => $request->name,
-                'price' => $request->price,
-                'size' => $request->size,
-                'color' => $request->color,
-                'quantity' => $request->quantity,
-                'description' => $request->description,
-                'status' => $request->status,
-                'sold' => $request->sold,
-            ]);
-        } else {
-            $updated = $product->update([
-                'name' => $request->name,
-                'price' => $request->price,
-                'size' => $request->size,
-                'color' => $request->color,
-                'quantity' => $request->quantity,
-                'description' => $request->description,
-                'status' => $request->status,
-                'sold' => $request->sold,
-            ]);
-        }
-
-        if ($updated) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Produk berhasil diupdate!',
-                'data' => $product
-            ], 200);
-        } else {
+        if (!$updated) {
             return response()->json([
                 'success' => false,
                 'message' => 'Produk gagal diupdate!',
             ], 500);
         }
+   
+        return response()->json([
+            'success' => true,
+            'message' => 'Produk berhasil diupdate!',
+            'data' => $product
+        ], 200);
+    }
+
+    public function updateImage(Request $request)
+    {
+        $id = $request->id;
+        // Lakukan pembaruan
+        $product = ProductsModel::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan',
+            ], 404);
+        }
+
+        if ($request->file('img')) {
+            $image = $request->file('img');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images'), $imageName);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gambar tidak ditemukan.',
+            ], 400);
+        }
+       
+        $updated = $product->update([
+            'img' => $imageName,
+        ]);
+
+        if (!$updated) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk gagal diupdate!',
+            ], 500);
+        }
+   
+        return response()->json([
+            'success' => true,
+            'message' => 'Produk berhasil diupdate!',
+            'data' => $product
+        ], 200);
     }
 
 
