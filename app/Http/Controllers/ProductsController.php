@@ -69,33 +69,58 @@ class ProductsController extends Controller
         }
     }
 
-    public function update(Request $request, $id) //update a product
+    public function update(Request $request, $id)
     {
-        $product = ProductsModel::find($id)->update([
-            'img' => $request->img,
-            'name' => $request->name,
-            'price' => $request->price,
-            'size' => $request->size,
-            'color' => $request->color,
-            'quantity' => $request->quantity,
-            'description' => $request->description,
-            'status' => $request->status,
-            'sold' => $request->sold,
-        ]);
+        // Lakukan pembaruan
+        $product = ProductsModel::find($id);
 
-        if ($product) {
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk tidak ditemukan',
+            ], 404);
+        }
+
+        if ($request->img != null) {
+            $updated = $product->update([
+                "img" => $request->img,
+                'name' => $request->name,
+                'price' => $request->price,
+                'size' => $request->size,
+                'color' => $request->color,
+                'quantity' => $request->quantity,
+                'description' => $request->description,
+                'status' => $request->status,
+                'sold' => $request->sold,
+            ]);
+        } else {
+            $updated = $product->update([
+                'name' => $request->name,
+                'price' => $request->price,
+                'size' => $request->size,
+                'color' => $request->color,
+                'quantity' => $request->quantity,
+                'description' => $request->description,
+                'status' => $request->status,
+                'sold' => $request->sold,
+            ]);
+        }
+
+        if ($updated) {
             return response()->json([
                 'success' => true,
-                'message' => 'Produk Berhasil Diupdate!',
+                'message' => 'Produk berhasil diupdate!',
                 'data' => $product
             ], 200);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Produk Gagal Diupdate!',
+                'message' => 'Produk gagal diupdate!',
             ], 500);
         }
     }
+
+
 
     public function destroy($id) //delete a product
     {
