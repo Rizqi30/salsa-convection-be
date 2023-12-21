@@ -80,7 +80,7 @@ class ProductsController extends Controller
                 'message' => 'Produk tidak ditemukan',
             ], 404);
         }
-       
+
         $updated = $product->update([
             'name' => $request->name,
             'price' => $request->price,
@@ -98,7 +98,7 @@ class ProductsController extends Controller
                 'message' => 'Produk gagal diupdate!',
             ], 500);
         }
-   
+
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil diupdate!',
@@ -129,7 +129,7 @@ class ProductsController extends Controller
                 'message' => 'Gambar tidak ditemukan.',
             ], 400);
         }
-       
+
         $updated = $product->update([
             'img' => $imageName,
         ]);
@@ -140,15 +140,13 @@ class ProductsController extends Controller
                 'message' => 'Produk gagal diupdate!',
             ], 500);
         }
-   
+
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil diupdate!',
             'data' => $product
         ], 200);
     }
-
-
 
     public function destroy($id) //delete a product
     {
