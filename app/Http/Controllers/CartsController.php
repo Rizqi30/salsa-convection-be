@@ -77,4 +77,30 @@ class CartsController extends Controller
             'data' => $cart
         ], 200);
     }
+
+    public function getCartByUserId($user_id) //get cart by user
+    {
+        $cart = CartModel::where('user_id', $user_id)->get();
+
+        $cartWithProductData = $cart->map(function ($cartItem) {
+            $productId = $cartItem->product_id;
+            $productData = $cartItem->productById($productId);
+
+            return [
+                'cart_id' => $cartItem->id,
+                'product_id' => $productId,
+                'size' => $cartItem->size,
+                'color' => $cartItem->color,
+                'quantity' => $cartItem->quantity,
+                'price' => $cartItem->price,
+                'product_data' => $productData,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Cart',
+            'data' => $cartWithProductData,
+        ], 200);
+    }
 }

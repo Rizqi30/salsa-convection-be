@@ -54,6 +54,7 @@ Route::group([
     Route::get('/', [CartsController::class, 'getCart']);
     Route::put('/update/{id}', [CartsController::class, 'updateCart']);
     Route::delete('/remove/{id}', [CartsController::class, 'deleteCart']);
+    Route::get('/user/{id}', [CartsController::class, 'getCartByUserId']);
 });
 
 Route::group([
