@@ -44,6 +44,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'notelp' => $request->notelp,
             'alamat' => $request->alamat,
+            'role' => $request->role,
             'email' => $request->email,
             'password' => bcrypt($request->password)
         ]);

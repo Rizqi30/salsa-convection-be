@@ -23,7 +23,7 @@ class OrderController extends Controller
 
         $params = array(
             'transaction_details' => array(
-                'order_id' => rand(),
+                'order_id' => $request->order_id,
                 'gross_amount' => $request->total,
             ),
             'customer_details' => array(
@@ -50,9 +50,55 @@ class OrderController extends Controller
         ]);
     }
 
-    public function showBySnapToken()
+    public function showBySnapTokenAll()
     {
         $orders = Order::with('user')->with('product')->get();
+        $groupedOrders = [];
+
+        foreach ($orders as $order) {
+            $snapToken = $order->snap_token;
+
+            if (!isset($groupedOrders[$snapToken])) {
+                $groupedOrders[$snapToken] = [
+                    'orders' => [],
+                    'total_price' => 0,
+                    'service_fee' => 0,
+                    'total_quantity' => 0,
+                    'status' => ''
+                ];
+            }
+
+            // Hitung biaya layanan (10% dari total harga pesanan)
+            $serviceFee = $order->price * 0.1; // Biaya layanan sebesar 10% dari harga pesanan
+            $groupedOrders[$snapToken]['service_fee'] += $serviceFee;
+
+            $groupedOrders[$snapToken]['orders'][] = $order;
+            $groupedOrders[$snapToken]['total_price'] += $order->price + $serviceFee; // Ubah 'price' sesuai field harga pada model Order
+            $groupedOrders[$snapToken]['total_quantity'] += $order->quantity; // Tambahkan quantity ke total quantity
+            $groupedOrders[$snapToken]['status'] = $order->status;
+
+            // Jika belum ada image yang diset, gunakan image dari order pertama
+            if (!isset($groupedOrders[$snapToken]['image'])) {
+                $groupedOrders[$snapToken]['image'] = $order->product->img;
+            }
+
+            // Daopatkan snaptoken dari data
+            if (!isset($groupedOrders[$snapToken]['snap_token'])) {
+                $groupedOrders[$snapToken]['snap_token'] = $order->snap_token;
+            }
+        }
+
+        // Ubah associative array menjadi array numerik
+        $result = array_values($groupedOrders);
+
+        return response()->json([
+            'orders' => $result,
+        ]);
+    }
+
+    public function showBySnapToken($userId)
+    {
+        $orders = Order::with('user')->with('product')->where('user_id', $userId)->get();
         $groupedOrders = [];
 
         foreach ($orders as $order) {
@@ -141,6 +187,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $order = Order::create([
+            'id' => $request->id,
             'user_id' => $request->user_id,
             'product_id' => $request->product_id,
             'size' => $request->size,
@@ -154,5 +201,26 @@ class OrderController extends Controller
         return response()->json([
             'order' => $order,
         ]);
+    }
+
+    public function callback(Request $request)
+    {
+        $serverKey = config('midtrans.server_key');
+        $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+
+        $order = Order::find($request->order_id);
+        if ($hashed !== $request->signature_key) {
+            if ($request->status_code == 200) {
+                if (!$order) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Order not found',
+                    ]);
+                }
+            }
+        }
+
+        $order->status = 'Paid';
+        $order->save();
     }
 }
