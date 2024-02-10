@@ -17,6 +17,7 @@ class ProductsModel extends Model
         'price',
         'size',
         'color',
+        'categories',
         'quantity',
         'description',
         'status',

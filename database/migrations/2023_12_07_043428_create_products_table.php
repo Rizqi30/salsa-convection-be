@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('price');
             $table->string('size');
             $table->string('color');
+            $table->string('categories');
             $table->string('quantity');
             $table->longText('description');
             $table->string('status');
